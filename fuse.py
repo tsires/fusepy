@@ -13,7 +13,7 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-from __future__ import division
+from __future__ import division, unicode_literals
 
 from ctypes import *
 from ctypes.util import find_library
@@ -576,8 +576,8 @@ class FUSE(object):
         return retsize
 
     def listxattr(self, path, namebuf, size):
-        attrs = self.operations('listxattr', path.decode(self.encoding)) or ''
-        ret = '\x00'.join(attrs).encode(self.encoding) + '\x00'
+        attrs = self.operations('listxattr', path.decode(self.encoding)) or b''
+        ret = b'\x00'.join(attrs).encode(self.encoding) + b'\x00'
 
         retsize = len(ret)
         # allow size queries
