@@ -4,12 +4,6 @@ from __future__ import with_statement
 
 from setuptools import setup
 
-try:
-    from lib2to3 import refactor
-    fixers = set(refactor.get_fixers_from_package('lib2to3.fixes'))
-except ImportError:
-    fixers = set()
-
 with open('README') as readme:
     documentation = readme.read()
 
@@ -27,13 +21,7 @@ setup(
     py_modules=['fuse'],
     url = 'http://github.com/terencehonles/fusepy',
 
-    use_2to3 = True,
-    # only use the following fixers (everything else is already compatible)
-    use_2to3_exclude_fixers = fixers - set([
-        'lib2to3.fixes.fix_except',
-        'lib2to3.fixes.fix_future',
-        'lib2to3.fixes.fix_numliterals',
-    ]),
+    use_2to3 = False,
 
     classifiers = [
         'Intended Audience :: Developers',
