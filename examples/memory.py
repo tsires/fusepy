@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import unicode_literals
+
 import logging
 
 from collections import defaultdict
@@ -53,7 +55,7 @@ class Memory(LoggingMixIn, Operations):
         try:
             return attrs[name]
         except KeyError:
-            return ''       # Should return ENOATTR
+            return b''       # Should return ENOATTR
 
     def listxattr(self, path):
         attrs = self.files[path].get('attrs', {})
