@@ -449,21 +449,21 @@ class FUSE(object):
     def rmdir(self, path):
         return self.operations('rmdir', path.decode(self.encoding))
 
-    def symlink(self, source, target):
-        'creates a symlink `target -> source` (e.g. ln -s source target)'
+    def symlink(self, oldpath, newpath):
+        'creates a symlink `newpath -> oldpath` (e.g. ln -s oldpath newpath)'
 
-        return self.operations('symlink', target.decode(self.encoding),
-                                          source.decode(self.encoding))
+        return self.operations('symlink', oldpath.decode(self.encoding),
+                                          newpath.decode(self.encoding))
 
-    def rename(self, old, new):
-        return self.operations('rename', old.decode(self.encoding),
-                                         new.decode(self.encoding))
+    def rename(self, oldpath, newpath):
+        return self.operations('rename', oldpath.decode(self.encoding),
+                                         newpath.decode(self.encoding))
 
-    def link(self, source, target):
-        'creates a hard link `target -> source` (e.g. ln source target)'
+    def link(self, oldpath, newpath):
+        'creates a hard link at `newpath` for existing file at `oldpath` (e.g. ln oldpath newpath)'
 
-        return self.operations('link', target.decode(self.encoding),
-                                       source.decode(self.encoding))
+        return self.operations('link', oldpath.decode(self.encoding),
+                                       newpath.decode(self.encoding))
 
     def chmod(self, path, mode):
         return self.operations('chmod', path.decode(self.encoding), mode)
@@ -880,14 +880,14 @@ class Operations(object):
 class LoggingMixIn:
     log = logging.getLogger('fuse.log-mixin')
 
-    def __call__(self, op, path, *args):
-        self.log.debug('-> %s %s %s', op, path, repr(args))
+    def __call__(self, op, *args):
+        self.log.debug('-> %s %r', op, args)
         ret = '[Unhandled Exception]'
         try:
-            ret = getattr(self, op)(path, *args)
+            ret = getattr(self, op)(*args)
             return ret
         except OSError as e:
             ret = str(e)
             raise
         finally:
-            self.log.debug('<- %s %s', op, repr(ret))
+            self.log.debug('<- %s %r', op, ret)
