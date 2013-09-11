@@ -60,14 +60,14 @@ class SFTP(LoggingMixIn, Operations):
     def readlink(self, path):
         return self.sftp.readlink(path)
 
-    def rename(self, old, new):
-        return self.sftp.rename(old, self.root + new)
+    def rename(self, oldpath, newpath):
+        return self.sftp.rename(oldpath, newpath)
 
     def rmdir(self, path):
         return self.sftp.rmdir(path)
 
-    def symlink(self, target, source):
-        return self.sftp.symlink(source, target)
+    def symlink(self, oldpath, newpath):
+        return self.sftp.symlink(oldpath, newpath)
 
     def truncate(self, path, length, fh=None):
         return self.sftp.truncate(path, length)

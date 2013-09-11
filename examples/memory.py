@@ -89,8 +89,8 @@ class Memory(LoggingMixIn, Operations):
         except KeyError:
             pass        # Should return ENOATTR
 
-    def rename(self, old, new):
-        self.files[new] = self.files.pop(old)
+    def rename(self, oldpath, newpath):
+        self.files[newpath] = self.files.pop(oldpath)
 
     def rmdir(self, path):
         self.files.pop(path)
@@ -104,11 +104,11 @@ class Memory(LoggingMixIn, Operations):
     def statfs(self, path):
         return dict(f_bsize=512, f_blocks=4096, f_bavail=2048)
 
-    def symlink(self, target, source):
-        self.files[target] = dict(st_mode=(S_IFLNK | 0o777), st_nlink=1,
-                                  st_size=len(source))
+    def symlink(self, oldpath, newpath):
+        self.files[newpath] = dict(st_mode=(S_IFLNK | 0o777), st_nlink=1,
+                                  st_size=len(oldpath))
 
-        self.data[target] = source
+        self.data[newpath] = oldpath
 
     def truncate(self, path, length, fh=None):
         self.data[path] = self.data[path][:length]

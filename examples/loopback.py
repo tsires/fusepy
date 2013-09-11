@@ -3,7 +3,6 @@
 from __future__ import with_statement
 
 from errno import EACCES
-from os.path import realpath
 from sys import argv, exit
 from threading import Lock
 
@@ -14,11 +13,22 @@ from fuse import FUSE, FuseOSError, Operations, LoggingMixIn
 
 class Loopback(LoggingMixIn, Operations):
     def __init__(self, root):
-        self.root = realpath(root)
+        self.root = os.path.realpath(root)
         self.rwlock = Lock()
 
-    def __call__(self, op, path, *args):
-        return super(Loopback, self).__call__(op, self.root + path, *args)
+    def _resolvepath(self, path):
+        """ Convert a local "absolute" path into a system path relative to our root """
+        return os.path.join(self.root, os.path.relpath(path, start='/'))
+
+    def __call__(self, op, *args):
+        args = list(args)
+        if op != 'symlink':
+            # first arg is always a local path that should be resolved, except in the case of symlink.
+            args[0] = self._resolvepath(args[0])
+        if op in ('link', 'rename', 'symlink'):
+            # second arg is a path to be resolved for link, rename, and symlink.
+            args[1] = self._resolvepath(args[1])
+        return super(Loopback, self).__call__(op, *args)
 
     def access(self, path, mode):
         if not os.access(path, mode):
@@ -42,10 +52,7 @@ class Loopback(LoggingMixIn, Operations):
             'st_gid', 'st_mode', 'st_mtime', 'st_nlink', 'st_size', 'st_uid'))
 
     getxattr = None
-
-    def link(self, target, source):
-        return os.link(source, target)
-
+    link = os.link
     listxattr = None
     mkdir = os.mkdir
     mknod = os.mknod
@@ -64,9 +71,7 @@ class Loopback(LoggingMixIn, Operations):
     def release(self, path, fh):
         return os.close(fh)
 
-    def rename(self, old, new):
-        return os.rename(old, self.root + new)
-
+    rename = os.rename
     rmdir = os.rmdir
 
     def statfs(self, path):
@@ -75,8 +80,7 @@ class Loopback(LoggingMixIn, Operations):
             'f_blocks', 'f_bsize', 'f_favail', 'f_ffree', 'f_files', 'f_flag',
             'f_frsize', 'f_namemax'))
 
-    def symlink(self, target, source):
-        return os.symlink(source, target)
+    symlink = os.symlink
 
     def truncate(self, path, length, fh=None):
         with open(path, 'r+') as f:
