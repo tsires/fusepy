@@ -778,8 +778,8 @@ class Operations(object):
 
         pass
 
-    def link(self, target, source):
-        'creates a hard link `target -> source` (e.g. ln source target)'
+    def link(self, oldpath, newpath):
+        'creates a hard link at `newpath` for existing file at `oldpath` (e.g. ln oldpath newpath)'
 
         raise FuseOSError(EROFS)
 
@@ -837,7 +837,7 @@ class Operations(object):
     def removexattr(self, path, name):
         raise FuseOSError(ENOTSUP)
 
-    def rename(self, old, new):
+    def rename(self, oldpath, newpath):
         raise FuseOSError(EROFS)
 
     def rmdir(self, path):
@@ -857,8 +857,8 @@ class Operations(object):
 
         return {}
 
-    def symlink(self, target, source):
-        'creates a symlink `target -> source` (e.g. ln -s source target)'
+    def symlink(self, oldpath, newpath):
+        'creates a symlink `newpath -> oldpath` (e.g. ln -s oldpath newpath)'
 
         raise FuseOSError(EROFS)
 
