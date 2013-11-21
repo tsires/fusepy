@@ -576,8 +576,8 @@ class FUSE(object):
         return retsize
 
     def listxattr(self, path, namebuf, size):
-        attrs = self.operations('listxattr', path.decode(self.encoding)) or b''
-        ret = b'\x00'.join(attrs).encode(self.encoding) + b'\x00'
+        attrs = [attr.encode(self.encoding) + b'\0' for attr in self.operations('listxattr', path.decode(self.encoding))]
+        ret = b''.join(attrs)
 
         retsize = len(ret)
         # allow size queries
