@@ -878,10 +878,10 @@ class Operations(object):
 
 
 class LoggingMixIn:
-    log = logging.getLogger('fuse.log-mixin')
+    __log = logging.getLogger('fuse.log-mixin')
 
     def __call__(self, op, *args):
-        self.log.debug('-> %s %r', op, args)
+        self.__log.debug('-> %s %r', op, args)
         ret = '[Unhandled Exception]'
         try:
             ret = getattr(self, op)(*args)
@@ -890,4 +890,4 @@ class LoggingMixIn:
             ret = str(e)
             raise
         finally:
-            self.log.debug('<- %s %r', op, ret)
+            self.__log.debug('<- %s %r', op, ret)
